@@ -96,7 +96,7 @@ whapp_count(Whapp) when is_binary(Whapp) ->
 whapp_count(Whapp) ->
     whapp_count(wh_util:to_binary(Whapp)).
 
--spec status() -> 'ok'.
+-spec status() -> 'no_return'.
 status() ->
     _ = [begin
              io:format("Node: ~s~n", [Node#node.node]),
