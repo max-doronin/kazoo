@@ -114,9 +114,9 @@
 -define(WH_AMQP_ETS, wh_amqp_ets).
 
 -record(wh_amqp_channel, {consumer = wh_amqp_channel:consumer_pid() :: pid() | '_'
-                          ,consumer_ref :: reference() | '$1' | '_'
-                          ,channel :: pid() | '$1' | '_'
-                          ,channel_ref :: reference() | '$1' | '_'
+                          ,consumer_ref :: reference() | '$1' | '_' | 'undefined'
+                          ,channel :: pid() | '$1' | '_' | 'undefined'
+                          ,channel_ref :: reference() | '$1' | '_' | 'undefined'
                           ,uri :: api_binary() | '$2' | '_'
                           ,started = now() :: wh_now() | '_'
                           ,commands = [] :: wh_amqp_commands() | '$1' | '_'

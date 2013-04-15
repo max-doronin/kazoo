@@ -132,7 +132,7 @@ targeted_publish(?NE_BINARY = Queue, Payload, ContentType) ->
 nodes_publish(Payload) ->
     nodes_publish(Payload, ?DEFAULT_CONTENT_TYPE).
 nodes_publish(Payload, ContentType) ->
-    basic_publish(?EXCHANGE_NODES, <<>>, Payload, ContentType, [maybe_publish]).
+    basic_publish(?EXCHANGE_NODES, <<>>, Payload, ContentType, ['maybe_publish']).
 
 -spec whapps_publish(ne_binary(), amqp_payload()) -> 'ok'.
 -spec whapps_publish(ne_binary(), amqp_payload(), ne_binary()) -> 'ok'.
@@ -278,7 +278,7 @@ offnet_resource_publish(Payload, ContentType) ->
 monitor_publish(Payload, ContentType, RoutingKey) ->
     basic_publish(?EXCHANGE_MONITOR, RoutingKey, Payload, ContentType).
 
--type conf_routing_type() :: 'discovery' | 'event' | 'command'.
+-type conf_routing_type() :: 'discovery' | 'event' | 'command' | 'config'.
 -spec conference_publish(amqp_payload(), conf_routing_type()) -> 'ok'.
 -spec conference_publish(amqp_payload(), conf_routing_type(), api_binary()) -> 'ok'.
 -spec conference_publish(amqp_payload(), conf_routing_type(), api_binary(), wh_proplist()) -> 'ok'.
@@ -323,9 +323,9 @@ conference_publish(Payload, 'command', ConfId, Options, ContentType) ->
 %% generic publisher for an Exchange.Queue
 %% Use <<"#">> for a default Queue
 
--spec basic_publish(ne_binary(), ne_binary(), amqp_payload()) -> 'ok'.
--spec basic_publish(ne_binary(), ne_binary(), amqp_payload(), ne_binary()) -> 'ok'.
--spec basic_publish(ne_binary(), ne_binary(), amqp_payload(), ne_binary(), wh_proplist()) -> 'ok'.
+-spec basic_publish(ne_binary(), binary(), amqp_payload()) -> 'ok'.
+-spec basic_publish(ne_binary(), binary(), amqp_payload(), ne_binary()) -> 'ok'.
+-spec basic_publish(ne_binary(), binary(), amqp_payload(), ne_binary(), wh_proplist()) -> 'ok'.
 basic_publish(Exchange, RoutingKey, Payload) ->
     basic_publish(Exchange, RoutingKey, Payload, ?DEFAULT_CONTENT_TYPE).
 
