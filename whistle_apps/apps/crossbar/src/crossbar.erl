@@ -76,7 +76,8 @@ start_link() ->
                                                                 ,{'onrequest', fun on_request/1}
                                                                 ,{'onresponse', fun on_response/3}
                                                                ]
-                                     )
+                                     ),
+                lager:info("crossbar SSL started on port ~b", [SSLPort])
             catch
                 'throw':{'invalid_file', _File} ->
                     lager:info("SSL disabled: failed to find ~s (tried prepending ~s too)", [_File, RootDir])
