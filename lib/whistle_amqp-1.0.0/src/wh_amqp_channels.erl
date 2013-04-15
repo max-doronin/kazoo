@@ -398,7 +398,7 @@ find_reference(Ref) ->
                   }],
     ets:select(?TAB, MatchSpec).
 
--spec demonitor_all_connection_channels(ne_binary() | wh_amqp_channels()) -> 'ok'.
+-spec demonitor_all_connection_channels(ne_binary() | wh_amqp_channels() | '$end_of_table') -> 'ok'.
 demonitor_all_connection_channels(URI) when is_binary(URI) ->
     MatchSpec = [{#wh_amqp_channel{channel = '$1', uri = '$2', _ = '_'}
                   ,[{is_pid,'$1'}
@@ -408,7 +408,7 @@ demonitor_all_connection_channels(URI) when is_binary(URI) ->
                  }],
     lager:notice("removing channels belonging to lost connection '~s'", [URI]),
     demonitor_all_connection_channels(ets:select(?TAB, MatchSpec, 1));
-demonitor_all_connection_channels('$end_of_table') -> ok;
+demonitor_all_connection_channels('$end_of_table') -> 'ok';
 demonitor_all_connection_channels({[Channel], Continuation}) ->
     _ = maybe_demonitor_channel(Channel),
     demonitor_all_connection_channels(ets:match(Continuation)).
@@ -416,13 +416,13 @@ demonitor_all_connection_channels({[Channel], Continuation}) ->
 -spec attempt_rebuild_channel(wh_amqp_channel()) -> wh_amqp_channel().
 attempt_rebuild_channel(Channel) ->
     _ = log_short_lived(Channel),
-    C1 = wh_amqp_channel:close(Channel#wh_amqp_channel{reconnecting=true}),
+    C1 = wh_amqp_channel:close(Channel#wh_amqp_channel{reconnecting='true'}),
     C2 = wh_amqp_channel:new(C1),
-    C2#wh_amqp_channel{reconnecting=false}.
+    C2#wh_amqp_channel{reconnecting='false'}.
 
 -spec maybe_monitor_consumer(wh_amqp_channel()) -> wh_amqp_channel().
 maybe_monitor_consumer(#wh_amqp_channel{consumer=Consumer}=Channel) when is_pid(Consumer) ->
-    Ref = erlang:monitor(process, Consumer),
+    Ref = erlang:monitor('process', Consumer),
     ets:update_element(?TAB, Consumer, [{#wh_amqp_channel.consumer_ref, Ref}]),
     Channel#wh_amqp_channel{consumer_ref=Ref};
 maybe_monitor_consumer(Channel) ->
@@ -431,7 +431,7 @@ maybe_monitor_consumer(Channel) ->
 -spec maybe_monitor_channel(wh_amqp_channel()) -> wh_amqp_channel().
 maybe_monitor_channel(#wh_amqp_channel{consumer=Consumer, channel=Pid
                                        ,uri=URI}=Channel) when is_pid(Pid) ->
-    Ref = erlang:monitor(process, Pid),
+    Ref = erlang:monitor('process', Pid),
     ets:update_element(?TAB, Consumer, [{#wh_amqp_channel.channel_ref, Ref}
                                         ,{#wh_amqp_channel.channel, Pid}
                                         ,{#wh_amqp_channel.uri, URI}
